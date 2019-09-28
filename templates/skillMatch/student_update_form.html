@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+	<div id="main">
+			<!-- Post -->
+			<article class="post">
+				<header>
+					<div class="title">
+						<h2>
+							<a href="#">Editing {{ user.get_full_name }}</a></h2>
+						<p>Student at the University of Virginia</p>
+					</div>
+					
+					<div class="meta">
+						<!-- <time class="published" datetime="2015-11-01">November 1, 2015</time> -->
+						<a href="#" class="author">
+							<!-- <span class="name">{{ person.name }}</span> -->
+							<img src = "{{ picture.url }}" class="img-responsive"/>
+						</a>
+					</div>
+				</header>
+
+				{% crispy form %}
+				<footer>
+{#					<p>#}
+{#						Don't see a <a href="{% url 'skillMatch:class_create' %}"> Course</a> or <a href="{% url 'skillMatch:skill_create' %}"> Skill</a>? Create it!#}
+{#					</p>#}
+				</footer>
+			</article>
+	</div>
+{% endblock %}

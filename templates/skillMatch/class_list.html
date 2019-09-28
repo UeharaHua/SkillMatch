@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <div id="main">
+    {% if classes %}
+        <ul>
+        <ul class="actions">
+        <li><a href = "{% url 'skillMatch:class_create' %}" class="button large">Create a New Class</a></li>
+        </ul>
+            {% for class in classes %}
+				<article class="post">
+					<header>
+						<div class="title">
+							<h2>{{ class.prefix}}  {{ class.course_number }}  {{ class.professor }}  {{ class.semester }} </h2>
+						</div>
+					</header>
+
+
+					<footer>
+						<ul class="actions">
+							<li><a href = '{% url "skillMatch:add_class" user.username class.id %}' class="button large">Add this Class</a></li>
+						</ul>
+					</footer>
+				</article>
+            {% endfor %}
+        </ul>
+    {% else %}
+        No matching classes.
+    {% endif %}
+ </div>
+{% endblock %}

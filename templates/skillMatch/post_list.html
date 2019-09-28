@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+ <div id="main">
+	<!-- <article class="post"> -->
+		<ul class="actions">
+			{% if user.username %}
+			<li><a href={% url 'skillMatch:post_create' user.username %} class="button large">Create Post</a></li>
+				{% if filter == "True" %}
+				<li><a href={% url 'skillMatch:post_list' False %} class="button large">Show All Posts</a></li>
+				{% else %}
+				<li><a href={% url 'skillMatch:post_list' True %} class="button large">Show Posts From Friends</a></li>
+				{% endif %}
+			{% endif %}
+		</ul>
+	<!-- </article> -->
+    {% if post_results %}
+        <ul>
+            {% for post in post_results %}
+				<article class="post">
+					<header>
+						<div class="title">
+							<h2>{{ post.title }}</a></h2>
+							<p><a href={% url 'skillMatch:profile' post.author_user %}>{{ post.author_name }}</a></p>
+						</div>
+						<div class="meta">
+							<a href="#" class="author">
+								<!-- <span class="name">
+									{{ person.name }}
+								</span> -->
+								<img src="{{ post.author_picture }}" class="img-responsive" />
+							</a>
+						</div>
+					</header>
+
+					<div>
+					<p>{{ post.content }}</p>
+					</div>
+
+					<footer>
+						<div>
+						{% if post.course != 'None' %}
+							<ul>
+								<h3>Related Course: </h3>
+								<p>{{ post.course }}</p>
+							</ul>
+						{% endif %}
+						</div>
+						<div>
+						{% if post.skills %}
+							<ul class="list-group">
+								<h3>Related Skills:</h3>
+								{% for skill in post.skills %}
+									<p>{{ skill }}</p>
+								{% endfor %}
+							</ul>
+						{% endif %}
+						</div>
+
+						<!-- <ul class="stats">
+							<li><a href="#">General</a></li>
+							<li><a href="#" class="icon fa-heart">28</a></li>
+							<li><a href="#" class="icon fa-comment">128</a></li>
+						</ul> -->
+					</footer>
+
+					{% if post.comments %}
+						{% for comment in post.comments %}
+							<article class="mini-post">
+								<header>
+									<b><a href={% url 'skillMatch:profile' comment.author_user %}> {{ comment.author_name }} </a></b>
+									{{ comment.content }}
+								</header>
+							</article>
+						{% endfor %}
+					{% endif %}
+					{% if user.username %}
+						<a href={% url 'skillMatch:comment' user.username post.id %} class="button large">Add Comment</a>
+					{% endif %}
+				</article>
+            {% endfor %}
+        </ul>
+    {% else %}
+        No matching posts.
+    {% endif %}
+ </div>
+{% endblock %}

@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Main -->
+<div id="main">
+	<!-- Post -->
+	<article class="post">
+		<header>
+			<div class="title">
+				<h2>{{ person.get_full_name }}</h2>
+				<p>Student at the University of Virginia</p>
+			</div>
+			<div class="meta">
+				<!-- Maybe add a graduation date or time spent at UVa? -->
+				<!-- <time class="published" datetime="2015-11-01">November 1, 2015</time> -->
+
+				<h3 class="author">
+					<img src="{{ person.student.picture.url }}" onerror="this.onerror=null; this.src='https://skillmatch13-media.s3.amazonaws.com/media/images/default-user.jpg';" class="img-responsive" />
+				</h3>
+			</div>
+		</header>
+		
+		<!-- <span class="image featured">
+			<img src="images/pic01.jpg" alt="" />
+		</span> -->
+		
+		<div class="bio">
+			<h2>
+				Bio:
+			</h2>
+			{% if person.student.bio %}
+				<p>{{ person.student.bio }}</p>
+			{% else %}
+				{% if user == person %}
+					<p>You haven't input a bio yet!</p>
+				{% else %}
+					{{ person.get_full_name }} hasn't input a bio yet.
+				{% endif %}
+			{% endif %}
+		</div>
+		
+		<br>
+
+		<div class="classes">
+			<h2>
+				Classes:
+			</h2>
+			{% if person_classes %}
+				<ul>
+					{% for class in person_classes %}
+					<a href={% url 'skillMatch:course_details' class.pk %} >{{ class }}</a> <br>
+					{% endfor %}
+				</ul>
+			{% else %}
+				{% if user == person %}
+					<p>You haven't input any classes yet!</p>
+				{% else %}
+					{{ person.get_full_name }} hasn't input any classes yet.
+				{% endif %}
+			{% endif %}
+		</div>
+
+		<br>
+
+		<div class="skills">
+			<h2>
+				Skills:
+			</h2>
+			{% if person_skills %}
+				<ul>
+					{% for skill in person_skills %}
+						{{ skill }} <br>
+					{% endfor %}
+				</ul>
+			{% else %}
+				{% if user == person %}
+					<p>You haven't input any skills yet!</p>
+				{% else %}
+					{{ person.get_full_name }} hasn't input any skills yet.
+				{% endif %}
+			{% endif %}
+		</div>
+
+		<div class="friends">
+			<h2>
+				Friends:
+			</h2>
+			{% if person_friends %}
+				<ul>
+					{% for friend in person_friends %}
+						<a href={% url 'skillMatch:profile' friend.user %}>{{ friend.user.get_full_name }}</a> <br>
+					{% endfor %}
+				</ul>
+			{% else %}
+				{% if user == person %}
+					<p>You haven't added any friends yet!</p>
+				{% else %}
+					{{ person.get_full_name }} hasn't added any friends yet.
+				{% endif %}
+			{% endif %}
+		</div>
+		{% if user.username %}
+			{% if user == person %}
+			{% elif person.student in user.student.friends.all %}
+				<form action="{% url 'skillMatch:removefriend' person.username %}" method="post">
+					{% csrf_token %}
+					<input type="submit" class="button large" value="Remove Friend">
+				</form>
+			{% else %}
+				<form action="{% url 'skillMatch:addfriend' person.username %}" method="post">
+					{% csrf_token %}
+					<input type="submit" class="button large" value="Add Friend">
+				</form>
+			{% endif %}
+		{% endif %}
+		<br>
+		<footer>
+			{% if user == person %}
+				<a href="{% url 'skillMatch:student_edit' person.username %}" class="button large previous">Edit Profile</a>
+                <a href="{% url 'skillMatch:skill_list'  %}" class="button large previous"> Add Skill</a>
+                <a href="{% url 'skillMatch:class_list'  %}" class="button large previous">Add Class</a>
+			{% endif %}
+		</footer>
+	</article>
+</div>
+{% endblock %}

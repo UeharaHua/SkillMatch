@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load extras %}
+
+{% block content %}
+    <div id="main">
+    {% if matching_students %}
+        <ul>
+            {% for person in matching_students %}
+			{% if person.user.email %}
+				<article class="post">
+					<header>
+						<div class="title">
+							<h2><a href={% url 'skillMatch:profile' person.user %}>{{ person.user.get_full_name }}</a></h2>
+						</div>
+						<div class="meta">
+							<a href="#" class="author">
+								<!-- <span class="name">
+									{{ person.name }}
+								</span> -->
+								<img src="{{ person.picture.url }}" onerror="this.onerror=null; this.src='https://skillmatch13-media.s3.amazonaws.com/media/images/default-user.jpg';" class="img-responsive" />
+							</a>
+						</div>
+					</header>
+
+					<p>Bio: {{ person.bio }}</p>
+
+					{% if person not in user.student.friends.all and person != user.student %}
+						{% if user.student|common:person > 1 %}
+							{% if user.student|mutual:person > 1 %}
+								<p>You have {{ user.student|common:person }} classes and {{ user.student|mutual:person }} friends in common! </p>
+							{% elif user.student|mutual:person == 1 %}
+								<p>You have {{ user.student|common:person }} classes and 1 friend in common! </p>
+							{% else %}
+								<p>You have {{ user.student|common:person }} classes in common! </p>
+							{% endif %}
+						{% elif user.student|common:person == 1 %}
+							{% if user.student|mutual:person > 1 %}
+								<p>You have 1 class and {{ user.student|mutual:person }} friends in common! </p>
+							{% elif user.student|mutual:person == 1 %}
+								<p>You have 1 class and 1 friend in common! </p>
+							{% else %}
+								<p>You have 1 class in common! </p>
+							{% endif %}
+						{% else %}
+							{% if user.student|mutual:person > 1 %}
+								<p>You have {{ user.student|mutual:person }} friends in common! </p>
+							{% elif user.student|mutual:person == 1 %}
+								<p>You have 1 friend in common! </p>
+							{% endif %}
+						{% endif %}
+					{% endif %}
+
+					<footer>
+						{% if user.username %}
+							{% if person == user.student %}
+								<h4>Your Profile</h4>
+							{% elif person in user.student.friends.all %}
+								<form action="{% url 'skillMatch:removefriend' person.user %}" method="post">
+									{% csrf_token %}
+									<input type="submit" class="button large" value="Remove Friend">
+								</form>
+							{% else %}
+							<form action="{% url 'skillMatch:addfriend' person.user %}" method="post">
+									{% csrf_token %}
+									<input type="submit" class="button large" value="Add Friend">
+							</form>
+							{% endif %}
+						{% endif %}
+			
+					<!-- <ul class="actions">
+
+					</ul> -->
+{#						<ul class="stats">#}
+{#							<li><a href="#">General</a></li>#}
+{#							<li><a href="#" class="icon fa-heart">28</a></li>#}
+{#							<li><a href="#" class="icon fa-comment">128</a></li>#}
+{#						</ul>#}
+					</footer>
+				</article>
+			</ul>
+			{% endif %}
+            {% endfor %}
+
+
+	{% elif matching_classes %}
+		<ul>
+			{% for class in matching_classes %}
+				<article class="post">
+					<header>
+						<div class="title">
+							<h2><a href='#'>{{ class }}</a></h2>
+						</div>
+					</header>
+
+					<footer>
+							{% if user.username %}
+							{% if person == user.student %}
+								<h4>Your Profile</h4>
+							{% elif class in user.student.classes.all %}
+								<h4>Already added class</h4>
+							{% else %}
+							<form action="{% url 'skillMatch:add_class' user.username class.id %}" method="post">
+									{% csrf_token %}
+									<input type="submit" class="button large" value="Add Class">
+								</form>
+								{% endif %}
+						{% endif %}
+		
+{#						<ul class="stats">#}
+{#							<li><a href="#">General</a></li>#}
+{#							<li><a href="#" class="icon fa-heart">28</a></li>#}
+{#							<li><a href="#" class="icon fa-comment">128</a></li>#}
+{#						</ul>#}
+					</footer>
+				</article>
+			{% endfor %}
+		</ul>
+
+	{% elif matching_skills %}
+		<ul>
+			{% for skill in matching_skills %}
+				<article class="post">
+					<header>
+						<div class="title">
+							<h2><a href="#">{{ skill }}</a></h2>
+						</div>
+					</header>
+
+					<footer>
+							{% if user.username %}
+							{% if person == user.student %}
+								<h4>Your Profile</h4>
+							{% elif skill in user.student.skills.all %}
+								<h4>Already added skill</h4>
+							{% else %}
+							<form action="{% url 'skillMatch:add_skill' user.username skill.id %}" method="post">
+									{% csrf_token %}
+									<input type="submit" class="button large" value="Add Skill">
+								</form>
+								{% endif %}
+						{% endif %}
+			
+{#						<ul class="stats">#}
+{#							<li><a href="#">General</a></li>#}
+{#							<li><a href="#" class="icon fa-heart">28</a></li>#}
+{#							<li><a href="#" class="icon fa-comment">128</a></li>#}
+{#						</ul>#}
+					</footer>
+				</article>
+			{% endfor %}
+    {% else %}
+        No matching results.
+        <ul class="actions">
+        <li><a href = "{% url 'skillMatch:skill_create' %}" class="button large">Create a New Skill</a></li>
+        </ul>
+        <ul class="actions">
+        <li><a href = "{% url 'skillMatch:class_create' %}" class="button large">Create a New Class</a></li>
+        </ul>
+    {% endif %}
+ </div>
+{% endblock %}
